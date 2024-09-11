@@ -15,7 +15,7 @@ public class LevelData : MonoBehaviour
     public GameObject BlockPrefabs;
     public MapData mapData;
 
-    public List<BlockData> Blocks = new List<BlockData>();
+    public List<BlockData> BlocksList = new List<BlockData>();
     public List<BlockData> DestroyedBlocks = new List<BlockData>();
     public int[,,] BlockArr = new int[,,] { }; 
 
@@ -35,8 +35,15 @@ public class LevelData : MonoBehaviour
         }
     }
 
+    public void SaveLevelData(int[,,] map)
+    {
+        mapData.BlockArr = map;
+        mapData.SaveToJson();
+    }
+
     public void LoadLevelData()
     {
+        mapData.LoadFormJson();
         BlockArr = mapData.BlockArr;
         ResetMap(BlockArr.GetLength(0), BlockArr.GetLength(1), BlockArr.GetLength(2));
         for (int x = 0; x < BlockArr.GetLength(0); x++)
@@ -47,11 +54,11 @@ public class LevelData : MonoBehaviour
                 {
                     if (BlockArr[x, y, z] != 0)
                     {
-                        GameObject temp = Instantiate(BlockPrefabs, new Vector3(x, y, z), Quaternion.identity);
+                        GameObject temp = Instantiate(mapData.BlockIndexData.Blocks[BlockArr[x, y, z] - 1], new Vector3(x, y, z), Quaternion.identity);
                         temp.transform.parent = this.transform;
                         BlockData data = temp.GetComponent<BlockData>();
                         data.Initialized(x, y, z);
-                        Blocks.Add(data);
+                        BlocksList.Add(data);
                     }
                 }
             }
@@ -79,7 +86,7 @@ public class LevelData : MonoBehaviour
 
     private void DefaultBoom(Vector3 Pos)
     {
-        for(int i = 0; i < Blocks.Count; i++)
+        for(int i = 0; i < BlocksList.Count; i++)
         {
             //Blocks[i].Pos
         }
@@ -102,7 +109,7 @@ public class LevelData : MonoBehaviour
 
     public void ResetMap(int x, int y, int z)
     {
-        Blocks = new List<BlockData> { };
+        BlocksList = new List<BlockData> { };
         DestroyedBlocks = new List<BlockData> { };
         mapData.BlockArr = new int[x, y, z];
         for (; transform.childCount > 0;)
@@ -117,11 +124,6 @@ public class LevelData : MonoBehaviour
         //    temp.ResetPosition();
         //    Blocks.Add(temp);
         //}
-    }
-
-    public void AddBlock(int x, int y, int z)
-    {
-        mapData.BlockArr[x,y,z] = y;
     }
 
 }
