@@ -38,16 +38,21 @@ public class LevelData : MonoBehaviour
     public void LoadLevelData()
     {
         BlockArr = mapData.BlockArr;
-        for(int x = 0; x < BlockArr.GetLength(0); x++)
+        ResetMap(BlockArr.GetLength(0), BlockArr.GetLength(1), BlockArr.GetLength(2));
+        for (int x = 0; x < BlockArr.GetLength(0); x++)
         {
             for(int y = 0; y < BlockArr.GetLength(1); y++)
             {
                 for(int z = 0;  z < BlockArr.GetLength(2); z++)
                 {
-                    GameObject temp = Instantiate(BlockPrefabs, new Vector3(x,y,z), Quaternion.identity);
-                    BlockData data = temp.GetComponent<BlockData>();
-                    data.Initialized(x,y,z);
-                    Blocks.Add(data);
+                    if (BlockArr[x, y, z] != 0)
+                    {
+                        GameObject temp = Instantiate(BlockPrefabs, new Vector3(x, y, z), Quaternion.identity);
+                        temp.transform.parent = this.transform;
+                        BlockData data = temp.GetComponent<BlockData>();
+                        data.Initialized(x, y, z);
+                        Blocks.Add(data);
+                    }
                 }
             }
         }

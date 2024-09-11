@@ -54,6 +54,7 @@ public class BlockPositionSet : EditorWindow
         if (GUILayout.Button("데이터 불러오기", GUILayout.Width(100), GUILayout.Height(50)))
         {
             levelData.LoadLevelData();
+            map = levelData.BlockArr;
         }
 
         GUILayout.Space(20);
