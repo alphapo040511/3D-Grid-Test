@@ -12,7 +12,8 @@ public class BlockPositionSet : EditorWindow
     private LevelData levelData;
     private GameObject blockPrefab;
     private int XSize = 16, YSize = 3, ZSize = 16;
-    private int[,] map = new int[16,16];
+    private int NowHeight = 0;
+    private int[,,] map = new int[16, 3, 16];
 
     [MenuItem("Tool/LevelEditor")]
     private static void ShowWindow()
@@ -50,6 +51,12 @@ public class BlockPositionSet : EditorWindow
         }
 
         GUILayout.Space(20);
+        if (GUILayout.Button("데이터 불러오기", GUILayout.Width(100), GUILayout.Height(50)))
+        {
+            levelData.LoadLevelData();
+        }
+
+        GUILayout.Space(20);
         if (GUILayout.Button("블럭 전부 채우기", GUILayout.Width(100), GUILayout.Height(50)))
         {
             AllBlocksChange(true);
@@ -65,23 +72,21 @@ public class BlockPositionSet : EditorWindow
 
         if (GUILayout.Button("블럭 생성", GUILayout.Width(100), GUILayout.Height(50)))
         {
-            levelData.ResetMap();
+            levelData.ResetMap(XSize, YSize, ZSize);
 
             for (int x = 0; x < XSize; x++)
             {
                 for (int z = 0; z < ZSize; z++)
                 {
-                    if (map[x, z] != 0)
+                    for (int y = 0; y < YSize; y++)
                     {
-                        for (int y = 0; y < map[x, z]; y++)
+                        if (map[x, y, z] != 0)
                         {
-                            var newBlock = Instantiate(blockPrefab, new Vector3(x, y, z), Quaternion.identity);     //y로 적힌 부분을 map[x,z] 로 바꾸면 아래 공간이 빈 블럭이 생성됨
+                            var newBlock = Instantiate(blockPrefab, new Vector3(x, y, z), Quaternion.identity);
                             newBlock.transform.parent = levelData.gameObject.transform;
                             BlockData temp = newBlock.GetComponent<BlockData>();
-                            temp.XPos = x;
-                            temp.ZPos = z;
-                            temp.YPos = y;
-                            levelData.AddBlock(x, z, temp);
+                            temp.Initialized(x, y, z);
+                            levelData.AddBlock(x, y, z);
                         }
                     }
                 }
@@ -96,12 +101,18 @@ public class BlockPositionSet : EditorWindow
         if (XSize <= 0) XSize = 1;
         if(ZSize <= 0) ZSize = 1;
 
-        if (XSize != map.GetLength(0) || ZSize != map.GetLength(1))
+        if (XSize != map.GetLength(0) || YSize != map.GetLength(1) || ZSize != map.GetLength(2))
         {
-            map = new int[XSize, ZSize];
+            map = new int[XSize, YSize, ZSize];
         }
 
-        
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("-")) NowHeight--;
+            NowHeight = EditorGUILayout.IntField("현재 Y좌표", NowHeight);
+        if (GUILayout.Button("+")) NowHeight++;
+        if (NowHeight < 0) NowHeight = 0;
+        if (NowHeight >= YSize) NowHeight = YSize - 1;
+        GUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
 
@@ -133,7 +144,10 @@ public class BlockPositionSet : EditorWindow
         {
             for (int z = 0; z < ZSize; z++)
             {
-                map[x, z] = Bool ? 1 : 0;
+                for (int y = 0; y < YSize; y++)
+                {
+                    map[x, y, z] = Bool ? 1 : 0;
+                }
             }
         }
     }
@@ -145,7 +159,7 @@ public class BlockPositionSet : EditorWindow
         Rect rect = GUILayoutUtility.GetRect(640 / XSize, 640 / ZSize);
 
         UnityEngine.Color blockColor = UnityEngine.Color.gray;
-        switch(map[x, z])
+        switch(map[x, NowHeight, z])
         {
             case 0:
                 blockColor = UnityEngine.Color.gray;
@@ -169,11 +183,11 @@ public class BlockPositionSet : EditorWindow
         {
             if (Event.current.button == 0)        //마우스 왼쪽 클릭
             {
-                map[x, z] = (map[x, z] + 1) % (YSize + 1);
+                map[x, NowHeight, z] = 1; //(map[x, z] + 1) % (YSize + 1);
             }
             else if (Event.current.button == 1)      //마우스 오른쪽 클릭
             {
-                map[x, z] = 0;
+                map[x, NowHeight, z] = 0;
             }
             Event.current.Use();
         }

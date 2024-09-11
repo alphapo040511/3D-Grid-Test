@@ -407,11 +407,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b414d77855bef904eadcd137000ebe8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Blocks:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  BlockPrefabs: {fileID: 4065745344117685298, guid: 36ef17d11e8f556459d7ad2ad93cfdfe,
+    type: 3}
+  mapData: {fileID: 11400000, guid: 7dfe1d817ec655f41993295c0cf2d398, type: 2}
+  Blocks: []
   DestroyedBlocks: []
 --- !u!4 &680244400
 Transform:

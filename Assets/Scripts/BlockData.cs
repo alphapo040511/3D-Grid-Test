@@ -25,6 +25,13 @@ public class BlockData : MonoBehaviour
 
     }
 
+    public void Initialized(int x, int y, int z)
+    {
+        XPos = x;
+        YPos = y;
+        ZPos = z;
+    }
+
     public void Timer(float deltaTime)
     {
         respawnTime -= deltaTime;

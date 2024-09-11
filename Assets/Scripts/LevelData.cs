@@ -12,8 +12,12 @@ public enum BoomType
 
 public class LevelData : MonoBehaviour
 {
+    public GameObject BlockPrefabs;
+    public MapData mapData;
+
     public List<BlockData> Blocks = new List<BlockData>();
     public List<BlockData> DestroyedBlocks = new List<BlockData>();
+    public int[,,] BlockArr = new int[,,] { }; 
 
 
     // Start is called before the first frame update
@@ -28,6 +32,24 @@ public class LevelData : MonoBehaviour
         for (int i = 0; i < DestroyedBlocks.Count; i++)
         {
             DestroyedBlocks[i].Timer(Time.deltaTime);
+        }
+    }
+
+    public void LoadLevelData()
+    {
+        BlockArr = mapData.BlockArr;
+        for(int x = 0; x < BlockArr.GetLength(0); x++)
+        {
+            for(int y = 0; y < BlockArr.GetLength(1); y++)
+            {
+                for(int z = 0;  z < BlockArr.GetLength(2); z++)
+                {
+                    GameObject temp = Instantiate(BlockPrefabs, new Vector3(x,y,z), Quaternion.identity);
+                    BlockData data = temp.GetComponent<BlockData>();
+                    data.Initialized(x,y,z);
+                    Blocks.Add(data);
+                }
+            }
         }
     }
 
@@ -73,10 +95,11 @@ public class LevelData : MonoBehaviour
         //플레이어가 특정 거리 안쪽에 있으면 밀쳐냄
     }
 
-    public void ResetMap()
+    public void ResetMap(int x, int y, int z)
     {
         Blocks = new List<BlockData> { };
         DestroyedBlocks = new List<BlockData> { };
+        mapData.BlockArr = new int[x, y, z];
         for (; transform.childCount > 0;)
         {
             DestroyImmediate(transform.GetChild(0).gameObject);
@@ -91,9 +114,9 @@ public class LevelData : MonoBehaviour
         //}
     }
 
-    public void AddBlock(int x, int z,BlockData block)
+    public void AddBlock(int x, int y, int z)
     {
-        Blocks.Add(block);
+        mapData.BlockArr[x,y,z] = y;
     }
 
 }
