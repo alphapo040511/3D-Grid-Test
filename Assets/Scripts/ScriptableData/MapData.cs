@@ -9,6 +9,7 @@ public class MapData : ScriptableObject
 {
     public BlockIndex BlockIndexData;
     public int[,,] BlockArr = new int[,,] { };
+    public Dictionary<Vector3Int, int> BlockDataDictionary = new Dictionary<Vector3Int, int> { };
     public TextAsset mapJsonFile;
 
 #if UNITY_EDITOR
@@ -22,7 +23,8 @@ public class MapData : ScriptableObject
 
         var data = JsonConvert.SerializeObject(new
         {
-            BlockArr
+            BlockArr,
+            BlockDataDictionary
         }, Formatting.Indented);        //JSON 변환 빛 파일 포맷 설정
 
         System.IO.File.WriteAllText(AssetDatabase.GetAssetPath(mapJsonFile), data);       //파일에 JSON을 쓴다.
@@ -39,10 +41,12 @@ public class MapData : ScriptableObject
 
         var data = JsonConvert.DeserializeAnonymousType(mapJsonFile.text, new
         {
-            BlockArr = new int[,,] { }
+            BlockArr = new int[,,] { },
+            BlockDataDictionary = new Dictionary<Vector3Int, int> { }
         });
 
         BlockArr = data.BlockArr;
+        BlockDataDictionary = data.BlockDataDictionary;
     }
 
 #endif

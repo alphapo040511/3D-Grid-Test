@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class DynamicMeshManager : MonoBehaviour
 {
+    public MapData mapData;
+
     public GameObject blockPrefab; // 블록 생성에 사용할 프리팹
     private Dictionary<Vector3Int, GameObject> blockDictionary = new Dictionary<Vector3Int, GameObject>(); // 위치를 키로, 블록 게임오브젝트를 값으로 저장하는 딕셔너리
     public bool useDebugRay = true; // 디버그 레이 사용 여부
@@ -15,6 +17,7 @@ public class DynamicMeshManager : MonoBehaviour
 
     void Start()
     {
+        mapData.LoadFormJson();
         GenerateInitialBlocks(); // 초기 블록 생성
         if (mainCamera == null)
         {
@@ -42,25 +45,38 @@ public class DynamicMeshManager : MonoBehaviour
     void GenerateInitialBlocks()
     {
         // 3중 for문으로 10x10x10 그리드에 블록 생성
-        for (int x = 0; x < GridSize; x++)
+        for (int x = 0; x < mapData.BlockArr.GetLength(0); x++)
         {
-            for (int y = 0; y < GridSize; y++)
+            for (int y = 0; y < mapData.BlockArr.GetLength(1); y++)
             {
-                for (int z = 0; z < GridSize; z++)
+                for (int z = 0; z < mapData.BlockArr.GetLength(2); z++)
                 {
-                    Vector3Int position = new Vector3Int(x, y, z);
-                    CreateBlock(position);
+                    if (mapData.BlockArr[x, y, z] != 0)
+                    {
+                        Vector3Int position = new Vector3Int(x, y, z);
+                        CreateBlock(position, mapData.BlockArr[x, y, z] - 1);
+                    }
                 }
             }
         }
         UpdateSurfaceBlocks(); // 모든 블록 생성 후 표면 블록만 활성화
     }
 
-    void CreateBlock(Vector3Int position)
+    void CreateBlock(Vector3Int position, int blockValue)
     {
-        GameObject blockInstance = Instantiate(blockPrefab, position, Quaternion.identity, transform);
+        GameObject blockInstance = Instantiate(SelectBlockPrefab(blockValue), position, Quaternion.identity, transform);
         blockDictionary[position] = blockInstance;
         blockInstance.SetActive(false); // 초기에는 모든 블록을 비활성화
+    }
+
+    private GameObject SelectBlockPrefab(int value)
+    {
+        if(value >= mapData.BlockIndexData.Blocks.Count || value < 0)
+        {
+            return null;
+        }
+
+        return mapData.BlockIndexData.Blocks[value];
     }
 
     public void DestroyBlockWithRaycast()

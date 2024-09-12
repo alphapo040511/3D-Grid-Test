@@ -17,7 +17,8 @@ public class LevelData : MonoBehaviour
 
     public List<BlockData> BlocksList = new List<BlockData>();
     public List<BlockData> DestroyedBlocks = new List<BlockData>();
-    public int[,,] BlockArr = new int[,,] { }; 
+    public int[,,] BlockArr = new int[,,] { };
+    public Dictionary<Vector3Int, int> BlockDataDic = new Dictionary<Vector3Int, int> { };
 
 
     // Start is called before the first frame update
@@ -35,9 +36,10 @@ public class LevelData : MonoBehaviour
         }
     }
 
-    public void SaveLevelData(int[,,] map)
+    public void SaveLevelData(int[,,] map, Dictionary<Vector3Int, int> mapDic)
     {
         mapData.BlockArr = map;
+        mapData.BlockDataDictionary = mapDic;
         mapData.SaveToJson();
     }
 
@@ -45,6 +47,8 @@ public class LevelData : MonoBehaviour
     {
         mapData.LoadFormJson();
         BlockArr = mapData.BlockArr;
+        BlockDataDic = mapData.BlockDataDictionary;
+
         ResetMap(BlockArr.GetLength(0), BlockArr.GetLength(1), BlockArr.GetLength(2));
         for (int x = 0; x < BlockArr.GetLength(0); x++)
         {
@@ -57,7 +61,6 @@ public class LevelData : MonoBehaviour
                         GameObject temp = Instantiate(mapData.BlockIndexData.Blocks[BlockArr[x, y, z] - 1], new Vector3(x, y, z), Quaternion.identity);
                         temp.transform.parent = this.transform;
                         BlockData data = temp.GetComponent<BlockData>();
-                        data.Initialized(x, y, z);
                         BlocksList.Add(data);
                     }
                 }

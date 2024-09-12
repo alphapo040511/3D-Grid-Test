@@ -407,6 +407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35051a2fc3b67394281988c3f28bfcc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapData: {fileID: 11400000, guid: 7dfe1d817ec655f41993295c0cf2d398, type: 2}
   blockPrefab: {fileID: 8153201705305126448, guid: 4f71f02ee36058c42855703e16b6cbd0,
     type: 3}
   useDebugRay: 1
@@ -414,7 +415,7 @@ MonoBehaviour:
   blockLayer:
     serializedVersion: 2
     m_Bits: 4294967295
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 961739752}
 --- !u!4 &1124148030
 Transform:
   m_ObjectHideFlags: 0

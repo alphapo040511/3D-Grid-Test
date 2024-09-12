@@ -10,9 +10,10 @@ public class BlockPositionSet : EditorWindow
 {
     private LevelData levelData;
     private BlockIndex blockIndex;
-    private int XSize = 16, YSize = 3, ZSize = 16;
+    private Vector3Int MapSize = new Vector3Int(16,3,16);
     private int NowHeight = 0;
     private int[,,] map = new int[16, 3, 16];
+    private Dictionary<Vector3Int, int> BlockDataDictionary = new Dictionary<Vector3Int, int> { };
 
     [MenuItem("Tool/LevelEditor")]
     private static void ShowWindow()
@@ -81,42 +82,42 @@ public class BlockPositionSet : EditorWindow
         if (GUILayout.Button("데이터 저장", GUILayout.Width(100), GUILayout.Height(50)))
         {
             SetBlock();
-            levelData.SaveLevelData(map);
+            levelData.SaveLevelData(map, BlockDataDictionary);
         }
 
         EditorGUILayout.EndHorizontal();
 
-        XSize = EditorGUILayout.IntField("맵 가로 크기", XSize);
-        ZSize = EditorGUILayout.IntField("맵 세로 크기", ZSize);
-        YSize = EditorGUILayout.IntField("맵 최대 높이", YSize);
-        if (XSize <= 0) XSize = 1;
-        if(ZSize <= 0) ZSize = 1;
+        MapSize.x = EditorGUILayout.IntField("맵 가로 크기", MapSize.x);
+        MapSize.z = EditorGUILayout.IntField("맵 세로 크기", MapSize.z);
+        MapSize.y = EditorGUILayout.IntField("맵 최대 높이", MapSize.y);
+        if (MapSize.x <= 0) MapSize.x = 1;
+        if(MapSize.z <= 0) MapSize.z = 1;
 
-        if (XSize != map.GetLength(0) || YSize != map.GetLength(1) || ZSize != map.GetLength(2))
+        if (MapSize.x != map.GetLength(0) || MapSize.y != map.GetLength(1) || MapSize.x != map.GetLength(2))
         {
-            map = new int[XSize, YSize, ZSize];
+            map = new int[MapSize.x, MapSize.y, MapSize.z];
         }
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("-")) NowHeight--;
             NowHeight = EditorGUILayout.IntField("현재 Y좌표", NowHeight);
         if (GUILayout.Button("+")) NowHeight++;
+        if (NowHeight >= MapSize.y) NowHeight = MapSize.y - 1;
         if (NowHeight < 0) NowHeight = 0;
-        if (NowHeight >= YSize) NowHeight = YSize - 1;
         GUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
 
-        for (int x = 0; x < XSize; x++)
+        for (int x = 0; x < MapSize.x; x++)
         {
             EditorGUILayout.BeginVertical();
-            for (int z = ZSize - 1; z >= 0; z--)
+            for (int z = MapSize.z - 1; z >= 0; z--)
             {
                 DrawBlock(x,z);
-                EditorGUILayout.Space(1);
+                EditorGUILayout.Space(2f);
             }
             EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(1);
+            EditorGUILayout.Space(2f);
         }
 
         
@@ -131,20 +132,35 @@ public class BlockPositionSet : EditorWindow
 
     private void SetBlock()
     {
-        levelData.ResetMap(XSize, YSize, ZSize);
+        levelData.ResetMap(MapSize.x, MapSize.y, MapSize.z);
 
-        for (int x = 0; x < XSize; x++)
+        for (int x = 0; x < MapSize.x; x++)
         {
-            for (int z = 0; z < ZSize; z++)
+            for (int z = 0; z < MapSize.z; z++)
             {
-                for (int y = 0; y < YSize; y++)
+                for (int y = 0; y < MapSize.y; y++)
                 {
+                    Vector3Int IntPos = new Vector3Int(x, y, z);
                     if (map[x, y, z] != 0)
                     {
+                        if (BlockDataDictionary.ContainsKey(IntPos))
+                        {
+                            BlockDataDictionary[IntPos] = map[x, y, z];
+                        }
+                        else
+                        {
+                            BlockDataDictionary.Add(IntPos, map[x, y, z]);
+                        }
                         var newBlock = Instantiate(blockIndex.Blocks[map[x, y, z] - 1], new Vector3(x, y, z), Quaternion.identity);
                         newBlock.transform.parent = levelData.gameObject.transform;
                         BlockData temp = newBlock.GetComponent<BlockData>();
-                        temp.Initialized(x, y, z);
+                    }
+                    else
+                    {
+                        if (BlockDataDictionary.ContainsKey(IntPos))
+                        {
+                            BlockDataDictionary.Remove(IntPos);
+                        }
                     }
                 }
             }
@@ -153,9 +169,9 @@ public class BlockPositionSet : EditorWindow
 
     private void AllBlocksChange(bool Bool)
     {
-        for (int x = 0; x < XSize; x++)
+        for (int x = 0; x < MapSize.x; x++)
         {
-            for (int z = 0; z < ZSize; z++)
+            for (int z = 0; z < MapSize.z; z++)
             {
                 map[x,NowHeight,z] = Bool ? 1 : 0;        //해당 높이만 채워지도록 변경
                 //for (int y = 0; y < YSize; y++)
@@ -170,7 +186,7 @@ public class BlockPositionSet : EditorWindow
     {
         if (levelData == null || blockIndex == null) return;
 
-        Rect rect = GUILayoutUtility.GetRect(640 / XSize, 640 / ZSize);
+        Rect rect = GUILayoutUtility.GetRect(640 / MapSize.x, 640 / MapSize.z);
 
         UnityEngine.Color blockColor = UnityEngine.Color.gray;
         switch(map[x, NowHeight, z])
@@ -186,6 +202,9 @@ public class BlockPositionSet : EditorWindow
                 break;
             case 3:
                 blockColor = UnityEngine.Color.red;
+                break;
+            default:
+                blockColor = UnityEngine.Color.white;
                 break;
         }
 

@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class BlockData : MonoBehaviour
 {
-    public int XPos, YPos, ZPos;                                           //블럭의 X,Y,Z 위치의 정수값을 저장할 int
-
     [Header("파괴됨")]public bool IsDestroyed;                             //현재 블럭이 파괴된 상태인지 나타낼 bool
     [Header("재 생성이 불가능한 블럭")] public bool NotRegeneration;       //현재 블럭이 파괴된 상태인지 나타낼 bool
 
@@ -23,13 +21,6 @@ public class BlockData : MonoBehaviour
     void Update()
     {
 
-    }
-
-    public void Initialized(int x, int y, int z)
-    {
-        XPos = x;
-        YPos = y;
-        ZPos = z;
     }
 
     public void Timer(float deltaTime)
@@ -49,9 +40,9 @@ public class BlockData : MonoBehaviour
 
     public void ResetPosition()
     {
-        XPos = (int)Mathf.Round(transform.position.x);
-        YPos = (int)Mathf.Round(transform.position.y);
-        ZPos = (int)Mathf.Round(transform.position.z);
-        transform.position = new Vector3(XPos, YPos, ZPos);               //보정 위치로 이동
+        //XPos = (int)Mathf.Round(transform.position.x);
+        //YPos = (int)Mathf.Round(transform.position.y);
+        //ZPos = (int)Mathf.Round(transform.position.z);
+        //transform.position = new Vector3(XPos, YPos, ZPos);               //보정 위치로 이동
     }
 }
