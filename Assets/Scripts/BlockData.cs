@@ -7,14 +7,17 @@ using UnityEngine;
 public class BlockData : MonoBehaviour
 {
     [Header("파괴됨")]public bool IsDestroyed;                             //현재 블럭이 파괴된 상태인지 나타낼 bool
-    [Header("재 생성이 불가능한 블럭")] public bool NotRegeneration;       //현재 블럭이 파괴된 상태인지 나타낼 bool
+    [Header("재 생성이 가능한 블럭")] public bool Regeneration;            //현재 블럭이 재생성이 가능한지 나타낼 bool
 
-    private float respawnTime;                                             //재 생성까지 필요한 시간을 저장할 float
+    public Vector3Int intPosition;
+    public float respawnTime;                                             //재 생성까지 필요한 시간을 저장할 float
+
+    private LevelManager levelManager;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        levelManager = LevelManager.instance;
     }
 
     // Update is called once per frame
@@ -23,19 +26,37 @@ public class BlockData : MonoBehaviour
 
     }
 
-    public void Timer(float deltaTime)
-    {
-        respawnTime -= deltaTime;
-        if(respawnTime <= 0 && IsDestroyed)
-        {
-            //재생성
-        }
-    }
-
     public void DestroyBlock(float RespawnTime)     //블럭이 파괴됐을때 호출할 함수
     {
         IsDestroyed = true;                         //블럭이 파괴된 것으로 변경
         respawnTime = RespawnTime;                  //블럭이 재 생성될 때 까지 필요한 시간
+    }
+
+    public void Timer(float deltaTime)
+    {
+        if (IsDestroyed == false) return;
+
+        respawnTime -= deltaTime;
+
+        if(respawnTime <= 0 && IsDestroyed)
+        {
+            Respawn();
+        }
+    }
+
+    private void Respawn()
+    {
+        this.gameObject.SetActive(true);
+        IsDestroyed = false;
+        levelManager.DisabledBlocks.Remove(this);
+    }
+
+    public void Initialized(Vector3Int Pos, bool isBool)
+    {
+        IsDestroyed = false;
+        intPosition = Pos;
+        Regeneration = isBool;
+        respawnTime = 0;
     }
 
     public void ResetPosition()

@@ -15,7 +15,6 @@ public class LevelData : MonoBehaviour
     public GameObject BlockPrefabs;
     public MapData mapData;
 
-    public List<BlockData> BlocksList = new List<BlockData>();
     public List<BlockData> DestroyedBlocks = new List<BlockData>();
     public int[,,] BlockArr = new int[,,] { };
     public Dictionary<Vector3Int, int> BlockDataDic = new Dictionary<Vector3Int, int> { };
@@ -39,7 +38,7 @@ public class LevelData : MonoBehaviour
     public void SaveLevelData(int[,,] map, Dictionary<Vector3Int, int> mapDic)
     {
         mapData.BlockArr = map;
-        mapData.BlockDataDictionary = mapDic;
+        //mapData.BlockDataDictionary = mapDic;
         mapData.SaveToJson();
     }
 
@@ -47,7 +46,7 @@ public class LevelData : MonoBehaviour
     {
         mapData.LoadFormJson();
         BlockArr = mapData.BlockArr;
-        BlockDataDic = mapData.BlockDataDictionary;
+        //BlockDataDic = mapData.BlockDataDictionary;
 
         ResetMap(BlockArr.GetLength(0), BlockArr.GetLength(1), BlockArr.GetLength(2));
         for (int x = 0; x < BlockArr.GetLength(0); x++)
@@ -61,7 +60,6 @@ public class LevelData : MonoBehaviour
                         GameObject temp = Instantiate(mapData.BlockIndexData.Blocks[BlockArr[x, y, z] - 1], new Vector3(x, y, z), Quaternion.identity);
                         temp.transform.parent = this.transform;
                         BlockData data = temp.GetComponent<BlockData>();
-                        BlocksList.Add(data);
                     }
                 }
             }
@@ -89,10 +87,7 @@ public class LevelData : MonoBehaviour
 
     private void DefaultBoom(Vector3 Pos)
     {
-        for(int i = 0; i < BlocksList.Count; i++)
-        {
-            //Blocks[i].Pos
-        }
+
     }
 
     private void CrossBoom(Vector3 Pos)
@@ -112,7 +107,6 @@ public class LevelData : MonoBehaviour
 
     public void ResetMap(int x, int y, int z)
     {
-        BlocksList = new List<BlockData> { };
         DestroyedBlocks = new List<BlockData> { };
         mapData.BlockArr = new int[x, y, z];
         for (; transform.childCount > 0;)
