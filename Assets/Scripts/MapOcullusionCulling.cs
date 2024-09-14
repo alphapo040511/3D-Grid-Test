@@ -20,12 +20,12 @@ public class MapOcullusionCulling : MonoBehaviour
         {
             mainCamera = Camera.main; // 메인 카메라가 설정되지 않았다면 자동으로 찾아 설정
         }
-        UpdateBlockVisibility(); // 초기 블록 가시성 업데이트
+        //UpdateBlockVisibility(); // 초기 블록 가시성 업데이트
     }
 
     void Update()
     {
-        UpdateBlockVisibility(); // 매 프레임마다 블록 가시성 업데이트
+        //UpdateBlockVisibility(); // 매 프레임마다 블록 가시성 업데이트
     }
 
     void GenerateInitialBlocks()

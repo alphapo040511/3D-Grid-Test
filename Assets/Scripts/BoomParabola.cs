@@ -7,6 +7,8 @@ public class BoomParabola : MonoBehaviour
 {
     public bool ready = true;       //임시로 작동 테스트
 
+    public BoomType type;
+
     public Transform FirePosition;
 
     public Vector3 startPosition;
@@ -28,6 +30,8 @@ public class BoomParabola : MonoBehaviour
     private Ray ray;
     private RaycastHit hit;
 
+    private Vector3Int targetIntPos;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +49,7 @@ public class BoomParabola : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 30f))
             {
                 targetPosition = hit.point;
+                targetIntPos = hit.collider.GetComponent<BlockData>().intPosition;
                 startPosition = FirePosition.position;
                 float dis = Vector3.Distance(startPosition, targetPosition);
                 arriveTime = dis / velocity;
@@ -93,7 +98,13 @@ public class BoomParabola : MonoBehaviour
             ready = true;
             meshRenderer.enabled = false;
             Debug.Log("도착" + transform.position);
+            Explosion();
         }
+    }
+
+    private void Explosion()
+    {
+        LevelManager.instance.DestroyBlock(type, targetIntPos);
     }
 
 

@@ -2,14 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BoomType
-{
-    Default = 0,
-    Cross = 1,
-    Long = 2,
-    KnockBack = 3
-}
-
 public class LevelData : MonoBehaviour
 {
     public GameObject BlockPrefabs;

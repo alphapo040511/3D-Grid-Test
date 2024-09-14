@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
+public enum BoomType
+{
+    Default = 0,
+    Cross = 1,
+    Long = 2,
+    KnockBack = 3
+}
+
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
@@ -38,10 +46,6 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public void TestBoom()
-    {
-        DefaultBoom(new Vector3Int(3, 2, 10));
-    }
 
     public void DestroyBlock(BoomType boom, Vector3Int Pos)
     {
@@ -69,7 +73,7 @@ public class LevelManager : MonoBehaviour
         GameObject target = ocullusion.blockDictionary[Pos];
         BlockData data = target.GetComponent<BlockData>();
         data.DestroyBlock(3);
-        if (data.Regeneration)
+        if (data.Regeneration && DisabledBlocks.Contains(data) == false)
         {
             DisabledBlocks.Add(data);
         }
@@ -81,7 +85,7 @@ public class LevelManager : MonoBehaviour
     {
         for(int x = -2; x <= 2; x++)
         {
-            for(int y = 0; y <= 0; y++)
+            for(int y = 0; y <= 0; y++)         //위 아래 범위가 터질지는 아직 안정해서 일단 넣어둠
             {
                 for(int z = -2; z <= 2; z++)
                 {
@@ -97,12 +101,31 @@ public class LevelManager : MonoBehaviour
 
     private void CrossBoom(Vector3Int Pos)
     {
-
+        {
+            for (int x = -3; x <= 3; x++)
+            {
+                for (int y = 0; y <= 0; y++)
+                {
+                    for (int z = -3; z <= 3; z++)
+                    {
+                        if (Mathf.Abs(x) == Mathf.Abs(z))
+                        {
+                            Vector3Int PosVector = Pos + new Vector3Int(x, y, z);
+                            BlockDestroy(PosVector);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void LongBoom(Vector3Int Pos)
     {
-
+        for (int x = -5; x <= 5; x++)
+        {
+            Vector3Int PosVector = Pos + new Vector3Int(x, 0, 0);
+            BlockDestroy(PosVector);
+        }
     }
 
     private void KnockBackBoom(Vector3Int Pos)

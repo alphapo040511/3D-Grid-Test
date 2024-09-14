@@ -28,8 +28,9 @@ public class BlockData : MonoBehaviour
 
     public void DestroyBlock(float RespawnTime)     //블럭이 파괴됐을때 호출할 함수
     {
-        IsDestroyed = true;                         //블럭이 파괴된 것으로 변경
+        if (IsDestroyed) return;
         respawnTime = RespawnTime;                  //블럭이 재 생성될 때 까지 필요한 시간
+        IsDestroyed = true;                         //블럭이 파괴된 것으로 변경
     }
 
     public void Timer(float deltaTime)
