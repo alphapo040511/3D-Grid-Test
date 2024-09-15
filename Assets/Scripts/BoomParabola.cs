@@ -9,7 +9,6 @@ public class BoomParabola : MonoBehaviour
 
     public BoomType type;
 
-    public Transform FirePosition;
 
     public Vector3 startPosition;
     public Vector3 targetPosition;
@@ -27,44 +26,39 @@ public class BoomParabola : MonoBehaviour
 
     private MeshRenderer meshRenderer;
 
-    private Ray ray;
-    private RaycastHit hit;
+
 
     private Vector3Int targetIntPos;
 
     // Start is called before the first frame update
     void Start()
     {
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.enabled = false;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Debug.Log("¹ß»ç");
-            if (Physics.Raycast(ray, out hit, 30f))
-            {
-                targetPosition = hit.point;
-                targetIntPos = hit.collider.GetComponent<BlockData>().intPosition;
-                startPosition = FirePosition.position;
-                float dis = Vector3.Distance(startPosition, targetPosition);
-                arriveTime = dis / velocity;
-                currentTime = 0;
-                transform.position = startPosition;
-                CalculateVelocity();
-                ready = false;
-                meshRenderer.enabled = true;
-            }
-        }
-
         if (ready) return;
 
         ThrowBoom();
         
+    }
+
+    public void BoomInitialize(RaycastHit hit, Transform FirePosition, BoomType boomType)
+    {
+        meshRenderer = GetComponent<MeshRenderer>();
+        type = boomType;
+        targetPosition = hit.point;
+        targetIntPos = hit.collider.GetComponent<BlockData>().intPosition;
+        startPosition = FirePosition.position;
+        float dis = Vector3.Distance(startPosition, targetPosition);
+        arriveTime = dis / velocity;
+        currentTime = 0;
+        transform.position = startPosition;
+        CalculateVelocity();
+        ready = false;
+        meshRenderer.enabled = true;
     }
 
     private void CalculateVelocity()
@@ -95,16 +89,24 @@ public class BoomParabola : MonoBehaviour
         }
         else
         {
-            ready = true;
-            meshRenderer.enabled = false;
-            Debug.Log("µµÂø" + transform.position);
-            Explosion();
+            Collider[] target = Physics.OverlapSphere(transform.position, 0.1f);
+            foreach (Collider C in target)
+            {
+                if (C != null)
+                {
+                    ready = true;
+                    meshRenderer.enabled = false;
+                    Debug.Log("µµÂø" + transform.position);
+                    Explosion();
+                }
+            }
         }
     }
 
     private void Explosion()
     {
         LevelManager.instance.DestroyBlock(type, targetIntPos);
+        Destroy(gameObject);
     }
 
 
