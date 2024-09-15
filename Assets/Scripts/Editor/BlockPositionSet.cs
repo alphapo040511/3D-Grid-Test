@@ -14,6 +14,8 @@ public class BlockPositionSet : EditorWindow
     private int NowHeight = 0;
     private int[,,] map = new int[16, 3, 16];
     private Dictionary<Vector3Int, int> BlockDataDictionary = new Dictionary<Vector3Int, int> { };
+    private int nowBlockIndex = 1;
+
 
     [MenuItem("Tool/LevelEditor")]
     private static void ShowWindow()
@@ -57,6 +59,9 @@ public class BlockPositionSet : EditorWindow
         {
             levelData.LoadLevelData();
             map = levelData.BlockArr;
+            MapSize.x = map.GetLength(0);
+            MapSize.y = map.GetLength(1);
+            MapSize.z = map.GetLength(2);
         }
 
         GUILayout.Space(10);
@@ -93,10 +98,18 @@ public class BlockPositionSet : EditorWindow
         if (MapSize.x <= 0) MapSize.x = 1;
         if(MapSize.z <= 0) MapSize.z = 1;
 
-        if (MapSize.x != map.GetLength(0) || MapSize.y != map.GetLength(1) || MapSize.x != map.GetLength(2))
+        if (MapSize.x != map.GetLength(0) || MapSize.y != map.GetLength(1) || MapSize.z != map.GetLength(2))
         {
             map = new int[MapSize.x, MapSize.y, MapSize.z];
         }
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("-")) nowBlockIndex--;
+        nowBlockIndex = EditorGUILayout.IntField("설치할 블럭 인덱스", nowBlockIndex);
+        if (GUILayout.Button("+")) nowBlockIndex++;
+        if (nowBlockIndex >= blockIndex.Blocks.Count) nowBlockIndex = blockIndex.Blocks.Count - 1;
+        if (nowBlockIndex < 1) nowBlockIndex = 1;
+        GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("-")) NowHeight--;
@@ -173,7 +186,7 @@ public class BlockPositionSet : EditorWindow
         {
             for (int z = 0; z < MapSize.z; z++)
             {
-                map[x,NowHeight,z] = Bool ? 1 : 0;        //해당 높이만 채워지도록 변경
+                map[x,NowHeight,z] = Bool ? nowBlockIndex : 0;        //해당 높이만 채워지도록 변경
                 //for (int y = 0; y < YSize; y++)
                 //{
                 //    map[x, y, z] = Bool ? 1 : 0;
@@ -216,7 +229,7 @@ public class BlockPositionSet : EditorWindow
         {
             if (Event.current.button == 0)        //마우스 왼쪽 클릭
             {
-                map[x, NowHeight, z] = (map[x, NowHeight, z] + 1) % (blockIndex.Blocks.Count + 1);
+                map[x, NowHeight, z] = nowBlockIndex;
             }
             else if (Event.current.button == 1)      //마우스 오른쪽 클릭
             {
