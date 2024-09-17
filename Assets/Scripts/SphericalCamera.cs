@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class SphericalCamera : MonoBehaviour
 {
-    public Transform playerTransform;           //임시로 방향을 설정하기 위한 플레이어 트렌스폼
+    public Transform playerTransform;           //?????? ?????? ???????? ???? ???????? ????????
 
-    public Transform target;                    //카메라가 바라볼 대상
-    public float distance = 1.0f;              //대상으로부터의 거리
-    public float mouseSensitivity = 100.0f;     //마우스 감도
-    public float scrollScsitivity = 2.0f;       //스크롤 감도
-    public float minYAngle = 5.0f;              //최소 수직 각도
-    public float maxYAngle = 85.0f;             //최대 수직 각도
+    public Transform target;                    //???????? ?????? ????
+    public float distance = 1.0f;              //?????????????? ????
+    public float mouseSensitivity = 100.0f;     //?????? ????
+    public float scrollScsitivity = 2.0f;       //?????? ????
+    public float minYAngle = 5.0f;              //???? ???? ????
+    public float maxYAngle = 85.0f;             //???? ???? ????
 
-    private float currentHorizontalAngle = 0.0f;            //수평 회전 각도
-    private float currentVerticalAngle = 0f;              //수직 회전 각도
+    private float currentHorizontalAngle = 0.0f;            //???? ???? ????
+    private float currentVerticalAngle = 0f;              //???? ???? ????
 
     void Start()
     {
@@ -35,20 +35,20 @@ public class SphericalCamera : MonoBehaviour
 
     private void HandleInput()
     {
-        //마우스 이동에 따른 각도 조정
+        //?????? ?????? ???? ???? ????
         currentHorizontalAngle -= Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         currentVerticalAngle += Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-        currentVerticalAngle = Mathf.Clamp(currentVerticalAngle, minYAngle, maxYAngle);         //최대 최소값으로 수직 이동을 막는다.
+        currentVerticalAngle = Mathf.Clamp(currentVerticalAngle, minYAngle, maxYAngle);         //???? ?????????? ???? ?????? ??????.
 
-        //스크롤에 따른 거리 조정
+        //???????? ???? ???? ????
         distance += -Input.GetAxis("Mouse ScrollWheel") * scrollScsitivity;
-        distance = Mathf.Clamp(distance, 0.5f, 2.0f);                             //거리 제한
+        distance = Mathf.Clamp(distance, 0.5f, 2.0f);                             //???? ????
     }
 
     private void UpdateCameraPosition()
     {
-        //구면 좌표계를 사용한 위치 계산
-        float verticalAngleRadians = currentVerticalAngle * Mathf.Deg2Rad;                  //각도를 래디안으로 변환
+        //???? ???????? ?????? ???? ????
+        float verticalAngleRadians = currentVerticalAngle * Mathf.Deg2Rad;                  //?????? ?????????? ????
         float horizontalAngleRaians = currentHorizontalAngle * Mathf.Deg2Rad;
 
         float x = distance * Mathf.Sin(verticalAngleRadians) * Mathf.Cos(horizontalAngleRaians);
@@ -58,8 +58,8 @@ public class SphericalCamera : MonoBehaviour
         Vector3 newPosition = new Vector3(x, y, z);
         newPosition = target.position + newPosition;
 
-        //지금 위치에서 새 위치로 이동
-        transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * 6);     //보간 속도 설정
+        //???? ???????? ?? ?????? ????
+        transform.position = newPosition;// Vector3.Lerp(transform.position, newPosition, Time.deltaTime * 6);     //???? ???? ????
         transform.LookAt(target);
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6723556448397963748}
   - component: {fileID: 8235791130436694172}
   - component: {fileID: -3775641644458123052}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Block_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,8 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de652061b356b14c81a15e1f5d7dd37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  XPos: 0
-  YPos: 0
-  ZPos: 0
   IsDestroyed: 0
-  NotRegeneration: 0
+  Regeneration: 0
+  intPosition: {x: 0, y: 0, z: 0}
+  respawnTime: 0
